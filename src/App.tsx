@@ -1,16 +1,23 @@
 import { useCallback, useState } from "react";
 
-type Field = null | "○" | "✕";
-type Fields = [[Field, Field, Field], [Field, Field, Field], [Field, Field, Field]];
+const FIELD_SIZE = 3;
 
-function App() {
-  const [fields, setFields] = useState<Fields>([
-    [null, null, null],
-    [null, null, null],
-    [null, null, null],
-  ]);
+type Tuple2D<T, S extends number, A1 extends T[] = [], A2 extends T[][] = []> = A2["length"] extends S
+  ? A2
+  : A1["length"] extends S
+  ? Tuple2D<T, S, [], [...A2, A1]>
+  : Tuple2D<T, S, [...A1, T], A2>;
+
+type Field = null | "○" | "✕";
+type Fields = Tuple2D<Field, typeof FIELD_SIZE>;
+
+export default function App() {
+  const [fields, setFields] = useState<Fields>(
+    [...Array(FIELD_SIZE)].map((_) => [...Array(FIELD_SIZE)].map((_) => null)) as Fields
+  );
   const [player, setPlayer] = useState<"○" | "✕">("✕");
   const [winner, setWinner] = useState<null | "○" | "✕">(null);
+  const [currentField, setCurrentField] = useState<[number, number]>([-1, -1]);
 
   const checkAllElementsEqual = (array: readonly any[]) => {
     // 配列の重複を無くす
@@ -82,24 +89,36 @@ function App() {
       fillField(x, y);
       changePlayer();
       judgeWinner();
+
+      setCurrentField([x, y]);
+      setTimeout((_) => setCurrentField([-1, -1]), 3000);
     },
     [changePlayer, fields, fillField, judgeWinner, winner]
   );
 
   return (
-    <div className="flex flex-col flex-1 w-100vw justify-center items-center">
+    <div className="flex flex-col bg-stone-800 flex-1 min-h-100vh text-stone-300 w-100vw justify-center items-center">
       <h1 className="text-2xl">○✕ゲーム</h1>
 
       <div className="mt-4">
-        {fields.map((_, i1) => (
-          <div className="flex" key={i1}>
-            {_.map((v, i2) => (
+        {fields.map((_, index1) => (
+          <div className="flex" key={index1}>
+            {_.map((value, index2) => (
               <button
-                className="border border-gray-400 h-20 text-30px w-20"
-                onClick={() => onClickField(i1, i2)}
-                key={i2}
+                // 押されているものはホバー、フォーカスのスタイルが当たらない
+                // ただし押してから3秒間はフォーカスのスタイルが当たる
+                className={`border rounded-lg border-stone-300 h-20 text-30px w-20 duration-200 ${
+                  !value && !winner && "hover:(border-stone-100 bg-stone-700)"
+                } ${
+                  !winner &&
+                  (currentField.join(" ") === `${index1} ${index2}` || !value) &&
+                  "focus:(ring-3 ring-stone-100)"
+                }`}
+                tabIndex={value || winner ? -1 : 1}
+                onClick={() => onClickField(index1, index2)}
+                key={index2}
               >
-                {v}
+                {value}
               </button>
             ))}
           </div>
@@ -107,8 +126,17 @@ function App() {
       </div>
 
       {winner && <p className="mt-4 text-2xl">{winner}の勝ち</p>}
+
+      <button
+        className="mt-4"
+        onClick={() => {
+          setFields([...Array(FIELD_SIZE)].map((_) => [...Array(FIELD_SIZE)].map((_) => null)) as Fields);
+          setPlayer("✕");
+          setWinner(null);
+        }}
+      >
+        リセット
+      </button>
     </div>
   );
 }
-
-export default App;
