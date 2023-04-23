@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Tuple2D } from "./tuple2D";
+import { Tuple2D } from "./types";
 import { checkAllElementsEqual } from "./checkAllElementsEqual";
 
 const FIELD_SIZE = 3;
