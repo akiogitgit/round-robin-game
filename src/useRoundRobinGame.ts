@@ -1,15 +1,12 @@
 import { useCallback, useState } from "react";
-import { Tuple2D } from "./types";
 import { checkAllElementsEqual } from "./checkAllElementsEqual";
 
-const FIELD_SIZE = 3;
-
 type Field = null | "○" | "✕";
-export type Fields = Tuple2D<Field, typeof FIELD_SIZE>;
+export type Fields = Field[][];
 
-export const useRoundRobinGame = () => {
+export const useRoundRobinGame = (fieldSize: number) => {
   const [fields, setFields] = useState<Fields>(
-    [...Array(FIELD_SIZE)].map(() => [...Array(FIELD_SIZE)].map(() => null)) as Fields
+    [...Array(fieldSize)].map(() => [...Array(fieldSize)].map(() => null)) as Fields
   );
   const [player, setPlayer] = useState<"○" | "✕">("✕");
   const [winner, setWinner] = useState<null | "○" | "✕">(null);
@@ -31,7 +28,7 @@ export const useRoundRobinGame = () => {
 
   const judgeWinner = useCallback(() => {
     // 縦の判定
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < fieldSize; i++) {
       // 対象の要素を配列で取得
       const targetFields = fields.map((v) => v.filter((_, i2) => i === i2)).flat();
       const firstTargetField = fields[0][i];
@@ -42,7 +39,7 @@ export const useRoundRobinGame = () => {
     }
 
     // 横の判定
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < fieldSize; i++) {
       const targetFields = fields.map((v, i1) => v.filter(() => i === i1)).flat();
       const firstTargetField = fields[i][0];
 
@@ -67,7 +64,7 @@ export const useRoundRobinGame = () => {
     if (firstTargetField2 && checkAllElementsEqual(targetFields2)) {
       setWinner(firstTargetField2);
     }
-  }, [fields]);
+  }, [fieldSize, fields]);
 
   const onClickField = useCallback(
     (x: number, y: number) => {
@@ -86,10 +83,10 @@ export const useRoundRobinGame = () => {
   );
 
   const reset = useCallback(() => {
-    setFields([...Array(FIELD_SIZE)].map(() => [...Array(FIELD_SIZE)].map(() => null)) as Fields);
+    setFields([...Array(fieldSize)].map(() => [...Array(fieldSize)].map(() => null)) as Fields);
     setPlayer("✕");
     setWinner(null);
-  }, []);
+  }, [fieldSize]);
 
   return { fields, onClickField, currentField, winner, reset };
 };
