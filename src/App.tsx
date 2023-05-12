@@ -38,7 +38,7 @@ function GameBoard({ fieldSize }: { fieldSize: number }) {
         <Board fields={fields} onClickField={onClickField} currentField={currentField} winner={winner} />
       </div>
 
-      {winner && <p className="mt-4 text-2xl">{winner}の勝ち</p>}
+      {winner && <p className="mt-4 text-2xl">{winner === "引き分け" ? "引き分け" : `${winner}の勝ち`}</p>}
       <button className="mt-4" onClick={reset}>
         リセット
       </button>

@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { checkAllElementsEqual } from "./checkAllElementsEqual";
+import { checkAllElementsEqual, checkAllElementsFill } from "./utils";
 
 type Field = null | "○" | "✕";
 export type Fields = Field[][];
@@ -9,7 +9,7 @@ export const useRoundRobinGame = (fieldSize: number) => {
     [...Array(fieldSize)].map(() => [...Array(fieldSize)].map(() => null)) as Fields
   );
   const [player, setPlayer] = useState<"○" | "✕">("○");
-  const [winner, setWinner] = useState<null | "○" | "✕">(null);
+  const [winner, setWinner] = useState<null | "○" | "✕" | "引き分け">(null);
   const [currentField, setCurrentField] = useState<[number, number]>([-1, -1]);
 
   const fillField = useCallback(
@@ -63,6 +63,11 @@ export const useRoundRobinGame = (fieldSize: number) => {
 
     if (firstTargetField2 && checkAllElementsEqual(targetFields2)) {
       setWinner(firstTargetField2);
+    }
+
+    // 引き分けの判定
+    if (checkAllElementsFill(fieldSize, fields)) {
+      setWinner("引き分け");
     }
   }, [fieldSize, fields]);
 
