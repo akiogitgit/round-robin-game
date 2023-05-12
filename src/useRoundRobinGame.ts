@@ -8,14 +8,14 @@ export const useRoundRobinGame = (fieldSize: number) => {
   const [fields, setFields] = useState<Fields>(
     [...Array(fieldSize)].map(() => [...Array(fieldSize)].map(() => null)) as Fields
   );
-  const [player, setPlayer] = useState<"○" | "✕">("✕");
+  const [player, setPlayer] = useState<"○" | "✕">("○");
   const [winner, setWinner] = useState<null | "○" | "✕">(null);
   const [currentField, setCurrentField] = useState<[number, number]>([-1, -1]);
 
   const fillField = useCallback(
     (x: number, y: number) => {
       const newFields: Fields = [...fields];
-      newFields[x][y] = player === "○" ? "✕" : "○";
+      newFields[x][y] = player;
 
       setFields(newFields);
     },
@@ -84,7 +84,7 @@ export const useRoundRobinGame = (fieldSize: number) => {
 
   const reset = useCallback(() => {
     setFields([...Array(fieldSize)].map(() => [...Array(fieldSize)].map(() => null)) as Fields);
-    setPlayer("✕");
+    setPlayer("○");
     setWinner(null);
   }, [fieldSize]);
 
