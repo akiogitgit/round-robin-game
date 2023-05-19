@@ -3,7 +3,7 @@
 - 動作プラットフォーム: Windows
 - 開発プラットフォーム: Windows
 - 開発言語: HTML/CSS, TypeScript
-- 利用ライブラリ: React
+- 利用ライブラリ: React, Windi CSS
 
 ## ⚠下で使うx,yについて
 fields[x][y]のように使い、fields[1][0]だと、下の位置になる。
